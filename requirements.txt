@@ -1,3 +1,4 @@
+chromadb==0.4.21
 elevenlabs==0.2.27
 langchain==0.0.352
 langchain_core==0.1.3

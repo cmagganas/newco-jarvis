@@ -1,14 +1,16 @@
 # Import necessary libraries
+import os
+import openai
+from dotenv import load_dotenv
+load_dotenv()
+openai.api_key = os.environ["OPENAI_API_KEY"]
+
+from langchain.chains.question_answering import load_qa_chain
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings import OpenAIEmbeddings
-# from langchain.prompts import ChatPromptTemplate
-from langchain.vectorstores import Chroma
-# from langchain_core.output_parsers import StrOutputParser
-# from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.chains.question_answering import load_qa_chain
-# from langchain.llms import OpenAI
-# from operator import itemgetter
+from langchain.vectorstores import Chroma
+
 
 mark_transcript = open("transcripts/mark_transcript.txt", "r").read()
 transcript = mark_transcript

@@ -56,7 +56,7 @@ while True:
         #     model="gpt-3.5-turbo",
         #     messages=messages
         # )        
-        response_text = rag_transcript(message)
+        response_text = rag_transcript().rag_transcript(message)
 
         # response_text = response.choices[0].message.content
         print(f"Jarvis: {response_text}")

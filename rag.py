@@ -14,7 +14,7 @@ mark_transcript = open("transcripts/mark_transcript.txt", "r").read()
 
 def rag_transcript(query):
     # Splitting the transcript text into chunks
-    text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0, separator="\n\n")
+    text_splitter = CharacterTextSplitter(chunk_size=800, chunk_overlap=50, separator="\n\n")
     split_chunks = text_splitter.split_text(mark_transcript)
 
     # Creating embeddings and document search

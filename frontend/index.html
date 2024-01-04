@@ -13,28 +13,28 @@
 </head>
 <body>
 
-    <div class="row">
+    <div class="grid">
         <div id="text-container">
-            <div id="output"></div>
+            <div id="output" class="message-box"> </div>
+            <div id="response" class="message-box"></div>
+        </div>
 
-            <div id="response"></div>
+        <div> 
+            <button id="settings" ><i class="fa fa-sliders  fa-2x"></i> Settings  </button>
+            <div id="settings_pannel">
+                <label for="voiceSelection"> Voice </label>
+                <select id="voiceSelection" > <option value=""> Test item 1 </option></select>
+            </div>
         </div>
-    <div class="main-container">
-        <div id="options-row">
-            <div id="voiceList"></div>
-            <button id="startButton" ><i class="fas  fa-microphone fa-3x"></i> PLAY</button>
-            <button id="shhButton" ><i class='fas fa-volume-up'></i> SHH</button>
-            
-        </div>
+
+            <div id="options-row">
+                <div id="voiceList"></div>
+                <button id="startButton" ><i class="fas  fa-microphone fa-3x"></i> PLAY</button>
+                <button id="shhButton" ><i class='fas fa-volume-up'></i> SHH</button>
+            </div>
 
     </div>
 
-    <button id="settings" ><i class="fa fa-sliders  fa-2x"></i> Settings  </button>
-    <div id="settings_pannel">
-        <label for="voiceSelection"> Voice </label>
-        <select id="voiceSelection" > <option value=""> Test item 1 </option></select>
-    </div>
-</div>
     <script src="script.js"></script>
 </body>
 </html>

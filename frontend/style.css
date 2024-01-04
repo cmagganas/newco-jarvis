@@ -18,14 +18,27 @@ body {
     box-sizing: border-box;
     background-color: var(--main-bg-color);
     color: var(--main-text-color);
-    max-height: 100dvh;
+    max-height: 10dvh;
+
 }
+
+.message-box {
+    margin : 20px;
+    padding:40px;
+    border-radius: 50px;
+    background-color: white;
+    color:black
+}
+
+#text-container{
+    justify-content: center;
+    align-items: center;
+}
+
 .row {
     display: flex;
     flex-direction: row;
 }
-
-
 
 .main-container {
     min-width: 400px;
@@ -35,13 +48,15 @@ body {
     background-color: var(--container-bg-color);
     box-shadow: 0 0 10px var(--container-box-shadow);
     border-radius: 8px;
-
     background-color: #1d2124;
     margin-top: 80dvh;
-    top : 0;
+    animation: grow_hover_stable 1s ease-in-out;
+}
 
-    animation : grow_hover_stable 1s ease-in-out;
-
+.grid {
+    display: grid;    
+    grid-template-rows: 6fr 1fr ;
+    grid-template-columns: 5fr 1fr;
 }
 
 /* Modern Button Styles */
@@ -55,7 +70,6 @@ button {
     transition: background-color 0.3s, color 0.3s;
     background-color: var(--button-bg-color);
     color: var(--button-text-color);
-
     height: 15dvh;
     border-radius: 50px;
     width: 60%;
@@ -72,18 +86,17 @@ button:hover {
     background-color: var(--button-hover-bg-color);
 }
 
-
-#options-row{
+#options-row {
     display: flex;
     flex-direction: row;
     background-color: #1d2124;
     justify-content: center;
 }
 
-#voiceSelection{
+#voiceSelection {
     border-radius: 20px;
     background-color: var(--button-bg-color);
-    color:white;
+    color: white;
 }
 
 #startButton {
@@ -94,43 +107,50 @@ button:hover {
     text-wrap: balance;
 }
 
-#settings{
-    height: 5dvh;
+#settings {
+    height: 10dvh;
     border-radius: 50px;
-    width: 10%;
+    width: 100%;
     text-align: center;
     text-wrap: balance;
-
+    font-size: 100%;
 }
 
-#settings_pannel{
+#settings_pannel {
     display: none;
-    min-width: 200px;
-    min-height: 800px;
     background-color: var(--container-bg-color);
     box-shadow: 0 0 10px var(--container-box-shadow);
     background-color: #1d2124;
-
     /*should be a panel to the left */
     animation: popout 0.5s ease-in-out;
-    padding: 100px;
+    padding: 10px;
     justify-content: center;
+}
+
+@media screen and (max-width: 768px) {
+    /* Adjust font size for smaller screens */
+    button {
+        font-size: 14px;
+    }
+    
+    label {
+        font-size: 14px;
+    }
 }
 
 @keyframes grow_hover_stable {
     0% {
         transform: scale(1);
-        top : 0;
+        top: 0;
     }
     50% {
         transform: scale(1.1);
-        top : 1px;
+        top: 1px;
     }
     100% {
         transform: scale(1);
-        top : 0;
+        top: 0;
     }
-    
 }
 
 @keyframes popout {
@@ -142,13 +162,12 @@ button:hover {
         transform: scale(1);
         opacity: 1;
     }
-    
 }
 
 #voiceSelection {
     border-radius: 20px;
     background-color: var(--button-bg-color);
-    color:white;
+    color: white;
     width: 100%;
     box-shadow: 1px 1px 1px 1px #888888;
 }
@@ -159,10 +178,10 @@ label {
 }
 
 /*animation class for the audio button red and ossolating size*/
-.pulsing{
+.pulsing {
     animation: pulse 1s infinite;
-
 }
+
 @keyframes pulse {
     0% {
         transform: scale(1);

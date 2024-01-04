@@ -1,3 +1,16 @@
+    // Check for SpeechRecognition API support
+    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!window.SpeechRecognition) {
+        console.error("Your browser does not support Speech Recognition.");
+       
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = navigator.language || 'en-US';
+
 document.addEventListener('DOMContentLoaded', function() {
     const startButton = document.getElementById('startButton');
     const shhButton = document.getElementById('shhButton'); // Get the SHH button
@@ -21,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
             shhButton.style.display = "none"
         }
 
-        //check if the recognition is running if so add pulsing to startButton
+        //check if the recognition is running if so add pulsing to istartButton
         if (recognizing) {
             startButton.classList.add("pulsing")
             startButton.innerHTML = stop_ih
@@ -33,24 +46,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 100);
 
 
-
-    // Check for SpeechRecognition API support
-    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (!window.SpeechRecognition) {
-        console.error("Your browser does not support Speech Recognition.");
-        return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = navigator.language || 'en-US';
-
     recognition.onstart = function() {
         recognizing = true;
-        console.log("Speech recognition started. Speak into the microphone.");
-
+        output.innerHTML =""
+        response.innerHTML =   ""
     };
 
     recognition.onerror = function(event) {
@@ -68,18 +67,19 @@ document.addEventListener('DOMContentLoaded', function() {
         for (let i = event.resultIndex; i < event.results.length; i++) {
             if (event.results[i].isFinal) {
                 const finalTranscript = event.results[i][0].transcript;
-                console.log("Final result: " + finalTranscript);
                 // Send finalTranscript to the server
 
+                output.innerHTML += event.results[i][0].transcript
                 sendToServer(finalTranscript);
-                // typeWriter(finalTranscript.split(""), document.getElementById("user_input"));
-                output.innerHTML = finalTranscript;
                 return;
             } else {
                 interimTranscript += event.results[i][0].transcript;
-                console.log("Interim result: " + interimTranscript);
+                
             }
+
+
         }
+        
     };
     
     function sendToServer(transcript) {
@@ -92,12 +92,13 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
-            console.log('Success:', data);
+            console.log('Success:', data.response);
             // Speak out the response here
-            // typeWriter(data.response.split(""), document.getElementById("response"));
-            response.innerHTML = data.response;
-
-            speakText(data.response);
+                typeWriter(data.response, 0);
+                const audio_uri = "data:audio/wav;base64,"+data.audio;
+                const audio = new Audio(audio_uri);
+                audio.play();
+            // speakText(data.response);
         })
         .catch((error) => {
             console.error('Error:', error);
@@ -174,13 +175,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }, false);
     
 
-    //type writer function for the text from the server or from the user text reader
-    function typeWriter(text, element) {
-        // if (text.length > 0) {
-        //     element.innerHTML += text.shift();
-        //     setTimeout(function() {
-        //         typeWriter(text, element);
-        //     }, 50);
-        // }
+    function typeWriter(text, index) {
+        const intervalId = setInterval(() => {
+            response.innerHTML += text.charAt(index);
+            index++;
+            if (index === text.length) {
+                clearInterval(intervalId);
+            }
+        }, Math.abs( response.innerHTML.length - index));
     }
 });

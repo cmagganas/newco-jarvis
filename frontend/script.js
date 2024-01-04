@@ -1,9 +1,38 @@
 document.addEventListener('DOMContentLoaded', function() {
     const startButton = document.getElementById('startButton');
-    const stopButton = document.getElementById('stopButton');
     const shhButton = document.getElementById('shhButton'); // Get the SHH button
+    shhButton.style.display = "none"
     const voiceDropdown = document.getElementById('voiceSelection');
+    const settingsButton = document.getElementById('settings');
+    const settings_pannel = document.getElementById('settings_pannel');
+    const response = document.getElementById('response');
+    const output = document.getElementById('output');
     let recognizing = false;
+
+    let start_ih = "<i class='fas fa-microphone'></i> PLAY"
+    let stop_ih =  "<i class='fas fa-microphone'></i> Stop"
+
+    // update function calls speechSynthesis.speaking to render shh button
+    setInterval(function() {
+        if (speechSynthesis.speaking) {
+            shhButton.style.display = "block"
+            shhButton.innerHTML = "<i class='fas fa-volume-up'></i> SHH"
+        } else {
+            shhButton.style.display = "none"
+        }
+
+        //check if the recognition is running if so add pulsing to startButton
+        if (recognizing) {
+            startButton.classList.add("pulsing")
+            startButton.innerHTML = stop_ih
+        } else {
+            startButton.classList.remove("pulsing")
+            startButton.innerHTML = start_ih
+        }
+
+    }, 100);
+
+
 
     // Check for SpeechRecognition API support
     window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -16,13 +45,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
+    recognition.lang = navigator.language || 'en-US';
 
     recognition.onstart = function() {
         recognizing = true;
         console.log("Speech recognition started. Speak into the microphone.");
+
     };
 
     recognition.onerror = function(event) {
+        console.log(event)
         console.error("Speech recognition error detected: " + event.error);
     };
 
@@ -38,7 +70,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 const finalTranscript = event.results[i][0].transcript;
                 console.log("Final result: " + finalTranscript);
                 // Send finalTranscript to the server
+
                 sendToServer(finalTranscript);
+                // typeWriter(finalTranscript.split(""), document.getElementById("user_input"));
+                output.innerHTML = finalTranscript;
+                return;
             } else {
                 interimTranscript += event.results[i][0].transcript;
                 console.log("Interim result: " + interimTranscript);
@@ -58,6 +94,9 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             console.log('Success:', data);
             // Speak out the response here
+            // typeWriter(data.response.split(""), document.getElementById("response"));
+            response.innerHTML = data.response;
+
             speakText(data.response);
         })
         .catch((error) => {
@@ -69,8 +108,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to populate voice options
     function populateVoiceList() {
         availableVoices = speechSynthesis.getVoices();
+        if(availableVoices.length == 0){
+            return;
+        }
         voiceDropdown.innerHTML = '';
-        
+    
         availableVoices.forEach((voice, index) => {
             const option = document.createElement('option');
             option.textContent = voice.name + ' (' + voice.lang + ')';
@@ -105,18 +147,14 @@ document.addEventListener('DOMContentLoaded', function() {
     startButton.addEventListener('click', function() {
         if (recognizing) {
             recognition.stop();
+
+            recognizing = false;
             return;
         }
+        
         recognition.start();
     }, false);
 
-    stopButton.addEventListener('click', function() {
-        if (recognizing) {
-            recognition.stop();
-        }
-    }, false);
-
-    // Event listener for the SHH button to stop speaking
     shhButton.addEventListener('click', function() {
         stopSpeaking();
     }, false);
@@ -128,5 +166,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function toggleElement(element) {
+        element.style.display = (element.style.display === "none" || element.style.display === "") ? "block" : "none";
+    }
+    settingsButton.addEventListener('click', function() {
+        toggleElement(settings_pannel)
+    }, false);
+    
 
+    //type writer function for the text from the server or from the user text reader
+    function typeWriter(text, element) {
+        // if (text.length > 0) {
+        //     element.innerHTML += text.shift();
+        //     setTimeout(function() {
+        //         typeWriter(text, element);
+        //     }, 50);
+        // }
+    }
 });

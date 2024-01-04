@@ -2,5 +2,6 @@ wakeup_words.json
 __pycache__/
 .env
 transcripts/
+mark_transcript.txt
 notebooks/
 raw_audio/

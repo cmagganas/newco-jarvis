@@ -12,7 +12,7 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import Chroma
 
 
-mark_transcript = open("transcripts/mark_transcript.txt", "r").read()
+mark_transcript = open("mark_transcript.txt", "r").read()
 transcript = mark_transcript
 
 class rag_transcript():

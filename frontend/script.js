@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // update function calls speechSynthesis.speaking to render shh button
     setInterval(function() {
-        if (speechSynthesis.speaking) {
+        if (audio.pause) {
             shhButton.style.display = "block"
             shhButton.innerHTML = "<i class='fas fa-volume-up'></i> SHH"
         } else {
@@ -81,6 +81,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
     };
+
+    var audio = ''
+
     
     function sendToServer(transcript) {
         fetch('http://localhost:8000/query', {
@@ -96,8 +99,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Speak out the response here
                 typeWriter(data.response, 0);
                 const audio_uri = "data:audio/wav;base64,"+data.audio;
-                const audio = new Audio(audio_uri);
+                audio = new Audio(audio_uri);
                 audio.play();
+
             // speakText(data.response);
         })
         .catch((error) => {
@@ -162,8 +166,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to stop speaking
     function stopSpeaking() {
-        if (speechSynthesis.speaking) {
-            speechSynthesis.cancel(); // This will stop the speech synthesis
+        if (audio.pause) {
+            audio.pause();
         }
     }
 

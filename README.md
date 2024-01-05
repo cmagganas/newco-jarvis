@@ -11,6 +11,8 @@ $ pip install -r requirements.txt
 $ python3 app.py
 ```
 
+![Jarvis](./image/JarvisSystemDiagramMiroBoard.jpg)
+
 ## How it works
 
 Our current implementation allows you to record your voice with a button to start and stop recording. Then by asking questions, Jarvis will answer them in a natural sounding voice. There is a stop button to interrupt the answer if it's too long.

@@ -250,3 +250,13 @@ label {
 #terminateButton.pulsing {
     animation-name: pulse-terminate;
 }
+
+#jsonOutput {
+    overflow-y: auto; /* Enables vertical scrolling if content overflows */
+    max-height: 200px; /* Sets a maximum height after which the content will scroll */
+    width: 100%; /* Optional: Makes the textarea width responsive to the container */
+    box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
+    padding: 8px; /* Adds some padding inside the textarea for better readability */
+    border: 1px solid #ccc; /* Adds a border to the textarea */
+    font-family: monospace; /* Changes the font to monospace for better JSON readability */
+}

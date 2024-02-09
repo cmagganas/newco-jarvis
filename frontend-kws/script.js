@@ -5,6 +5,16 @@ if (!window.SpeechRecognition) {
     console.error("Your browser does not support Speech Recognition.");
 }
 
+let awaitingConfirmation = false;
+let phraseForConfirmation = "";
+
+function speakText(text) {
+    if (text !== '' && speechSynthesis.getVoices().length > 0) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        speechSynthesis.speak(utterance);
+    }
+}
+
 const recognition = new SpeechRecognition();
 recognition.continuous = true;
 recognition.interimResults = false; // Changed to false to simplify handling confirmations
@@ -20,16 +30,22 @@ let jsonData = {
     "action_state": false,
     "messages": []
 };
+let actionState = false;
+
 
 function updateJsonOutput() {
     const jsonOutputElement = document.getElementById('jsonOutput');
     if (jsonOutputElement) {
         jsonOutputElement.value = JSON.stringify(jsonData, null, 2);
         console.log("JSON data updated");
+
+        // Scroll to the bottom of the textarea
+        jsonOutputElement.scrollTop = jsonOutputElement.scrollHeight;
     } else {
         console.error("Could not find the JSON output element.");
     }
 }
+
 
 // Define action phrases and apiDatabase
 const actionPhrases = ["capa", "kappa", "kapa", "papa"];
@@ -48,32 +64,7 @@ const apiDatabase = {
     }
   };
 
-  function processRecordedMessage(recordedMessage) {
-    const words = recordedMessage.trim().toLowerCase().split(/\s+/);
-    let foundPhrase = false;
-
-    // Enhanced checking to ensure action phrases are recognized accurately
-    words.forEach((word, index) => {
-        if (actionPhrases.includes(word)) {
-            foundPhrase = true;
-            console.log(`Action phrase detected: ${word}`);
-            // Assume confirmation if the next word is affirmatively contextual (e.g., "yes", "okay")
-            // This part is simplified; in a real scenario, you'd need a more nuanced approach
-            if (words[index + 1] && (words[index + 1] === 'yes' || words[index + 1] === 'okay')) {
-                performActionBasedOnPhrase(word);
-            } else {
-                console.log(`Action phrase "${word}" detected but not confirmed.`);
-                // Optionally, add logic here to prompt for verbal confirmation within the same session
-            }
-            return;
-        }
-    });
-
-    if (!foundPhrase) {
-        console.log("No action phrases found in the recorded message.");
-    }
-}
-
+ 
 // Assuming a simple action output for demonstration purposes
 function performActionBasedOnPhrase(phrase) {
     console.log(`Performing action for phrase: ${phrase}`);
@@ -81,27 +72,7 @@ function performActionBasedOnPhrase(phrase) {
     console.log("Action output:", actionOutput);
 }
 
-function startConfirmationProcess(phrase) {
-    recognition.stop(); // Stop the main recognition process
 
-    const confirmationRecognition = new window.SpeechRecognition();
-    confirmationRecognition.lang = recognition.lang;
-    confirmationRecognition.onresult = function(event) {
-        const transcript = event.results[0][0].transcript.trim().toLowerCase();
-        console.log("Confirmation heard:", transcript); // Log for debugging
-        if (transcript.includes("yes")) {
-            performActionBasedOnPhrase(phrase);
-        } else {
-            console.log("Confirmation denied.");
-        }
-        recognition.start(); // Resume the main recognition process
-    };
-    confirmationRecognition.onend = function() {
-        console.log("Confirmation process ended.");
-    };
-
-    confirmationRecognition.start();
-}
 
 updateJsonOutput();
 
@@ -163,47 +134,67 @@ document.addEventListener('DOMContentLoaded', function() {
     let recordedMessage = "";
     let isRecording = false;
 
-    recognition.onresult = function(event) {
-        console.log("Speech recognition result detected.");
+    let ignoreNextInput = false; // Flag to ignore the next speech input
+    
 
-        for (let i = event.resultIndex; i < event.results.length; i++) {
+    recognition.onresult = function(event) {
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
             if (event.results[i].isFinal) {
                 const transcript = event.results[i][0].transcript.trim().toLowerCase();
-                console.log("Final transcript:", transcript); // Log the final transcript for debugging
-                const words = transcript.split(/\s+/);
+                console.log("Final transcript:", transcript);
 
-                for (let word of words) {
-                    if (word === "action") {
-                        if (!isRecording) {
-                            // Start recording
-                            isRecording = true;
-                            jsonData.action_state = true;
-                            recordedMessage = ""; // Reset the recorded message
-                            pulseButton('action'); // Pulse the action button
-                            console.log("Recording started"); // For debugging
-                            // Instead of directly updating JSON, first process the recorded message
-                        }
-                        continue; // Skip adding the word "action" to both recorded message and onscreen text
-                    } else if (word === "terminate" && isRecording) {
-                        isRecording = false;
-                        console.log("Recording stopped. Processing message...");
-                        processRecordedMessage(recordedMessage);
-                        pulseButton('terminate'); // Pulse the terminate button
-
-                        recordedMessage = "";
-                        // continue; // Skip adding the word "terminate" to both recorded message and onscreen text
-
-                    } else if (isRecording) {
-                        recordedMessage += word + " ";
-                    }
+                if (ignoreNextInput) {
+                    console.log("Ignored input:", transcript);
+                    ignoreNextInput = false; // Reset the flag after ignoring one input
+                    return; // Exit early to not process this input further
                 }
-                // Update the display of the final transcript, excluding 'action' and 'terminate'
-                if (!isRecording) {
-                    output.innerHTML += transcript.replace(/\b(action|terminate)\b/g, '') + ' ';
+
+                // Handle the immediate action for "action" command
+                if (transcript === "action") {
+                    console.log("Action command detected.");
+                    pulseButton('action');
+                    jsonData.action_state = true;
+                    actionState = true; // Assuming this should be set here to indicate that an action command was recognized
+                    updateJsonOutput();
+                } else if (transcript === "terminate") {
+                    console.log("Terminate command detected. Terminating.");
+                    recognition.stop(); // Optionally stop recognition here if that's the intended action
+                    jsonData.action_state = false;
+                    actionState = false; // Reset action state
+                    updateJsonOutput();
+                    return; // Exit early
+                } else if (actionState && actionPhrases.includes(transcript) && !awaitingConfirmation) {
+                    // If an action command was given, check for action phrases, and not already awaiting confirmation
+                    awaitingConfirmation = true;
+                    phraseForConfirmation = transcript;
+                    
+                    speakText(`Did you say "${transcript}"?`);
+                    ignoreNextInput = true;
+
+                    return; // Wait for next result for confirmation
+                } else if (awaitingConfirmation) {
+                    // Now checking for confirmation
+                    if (transcript.includes("yes")) {
+                        console.log(`Confirmed: ${phraseForConfirmation}`);
+                        performActionBasedOnPhrase(phraseForConfirmation);
+                        jsonData.messages.push({apiDatabase}); // Assuming this should be structured differently to include relevant data
+                        speakText('Action confirmed. I added the data from the PLEX');
+                        ignoreNextInput = true;
+                        updateJsonOutput();
+                    } else {
+                        console.log(`Confirmation for '${phraseForConfirmation}' was denied.`);
+                    }
+                    awaitingConfirmation = false; // Reset confirmation state
+                    phraseForConfirmation = "";
+                    actionState = false; // Reset action state if needed
+                    return; // Exit after handling confirmation
                 }
             }
         }
     };
+
+    
+    
 
     // Function to add pulsing effect to buttons when special words are detected
     function pulseButton(word) {
@@ -271,15 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
         speechSynthesis.onvoiceschanged = populateVoiceList;
     }
 
-    // Speech Synthesis
-    function speakText(text) {
-        if (text !== '' && availableVoices.length > 0) {
-            const selectedVoiceIndex = voiceDropdown.selectedOptions[0].value;
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.voice = availableVoices[selectedVoiceIndex];
-            speechSynthesis.speak(utterance);
-        }
-    }
+ 
 
     startButton.addEventListener('click', function() {
         if (recognizing) {

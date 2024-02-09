@@ -191,8 +191,8 @@ label {
     }
 }
 
-/* Jarvis Button Style */
-#jarvisButton {
+/* action Button Style */
+#actionButton {
     padding: 10px 20px;
     font-size: 16px;
     border: none;
@@ -207,7 +207,7 @@ label {
     display: inline-block;
 }
 
-@keyframes pulse-jarvis {
+@keyframes pulse-action {
     0%, 100% {
         background-color: #3CB371; /* Lighter green */
     }
@@ -216,30 +216,6 @@ label {
     }
 }
 
-/* Kappa Button Style */
-#kappaButton {
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
-    height: 15dvh;
-    width: 60%;
-    text-align: center;
-    text-wrap: balance;
-    background-color: rgb(43, 128, 226);
-    display: inline-block;
-}
-
-@keyframes pulse-kappa {
-    0%, 100% {
-        background-color: #87CEFA; /* Light Sky Blue */
-    }
-    50% {
-        background-color: #B0E0E6; /* Powder Blue */
-    }
-}
 
 /* Terminate Button Style */
 #terminateButton {
@@ -267,12 +243,8 @@ label {
 }
 
 /* Applying specific animations to buttons */
-#jarvisButton.pulsing {
-    animation-name: pulse-jarvis;
-}
-
-#kappaButton.pulsing {
-    animation-name: pulse-kappa;
+#actionButton.pulsing {
+    animation-name: pulse-action;
 }
 
 #terminateButton.pulsing {

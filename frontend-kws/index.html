@@ -18,8 +18,15 @@
             <div id="output" class="message-box"> </div>
             <div id="response" class="message-box"></div>
         </div>
-
-        <div> 
+        <div id="json-container">
+            <textarea id="jsonOutput" rows="10" cols="50">
+            {
+                "action_state": false,
+                "messages": []
+            }
+            </textarea>
+        </div>
+                <div> 
             <button id="settings" ><i class="fa fa-sliders  fa-2x"></i> Settings  </button>
             <div id="settings_pannel">
                 <label for="voiceSelection"> Voice </label>
@@ -30,8 +37,7 @@
             <div id="options-row">
                 <div id="voiceList"></div>
                 
-                <button id="jarvisButton">Jarvis</button>
-                <button id="kappaButton">Kappa</button>
+                <button id="actionButton">Action</button>
                 <button id="terminateButton">Terminate</button>
                 
                 <button id="startButton" ><i class="fas  fa-microphone fa-3x"></i> PLAY</button>

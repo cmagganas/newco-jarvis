@@ -1,0 +1,61 @@
+:root {
+    --main-bg-color: #292626;
+    --main-text-color: #333;
+    --container-bg-color: #fff;
+    --container-box-shadow: rgba(0, 0, 0, 0.1);
+    --button-bg-color: #1d2124;
+    --button-hover-bg-color: #4f5355;
+    --button-text-color: #fff;
+    --select-border-color: #4a5055;
+    --select-hover-border-color: #1d272e;
+    --select-text-color: #202b33;
+}
+
+body, html {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: var(--main-bg-color);
+    color: var(--main-text-color);
+}
+
+.message-box, #jsonOutput {
+    margin: 20px;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: var(--container-bg-color);
+    color: var(--main-text-color);
+    box-shadow: var(--container-box-shadow);
+}
+
+.grid {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    background-color: var(--button-bg-color);
+    color: var(--button-text-color);
+}
+
+button:hover {
+    background-color: var(--button-hover-bg-color);
+}
+
+#settings_pannel {
+    display: none;
+    padding: 20px;
+    background-color: var(--container-bg-color);
+    border-radius: 5px;
+    box-shadow: var(--container-box-shadow);
+}

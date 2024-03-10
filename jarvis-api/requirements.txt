@@ -1,0 +1,7 @@
+elevenlabs
+fastapi
+uvicorn
+openai
+langchain
+chromadb
+tiktoken
